@@ -18,15 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Set up .NET
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      # 3. Restore dependencies and build
-      - name: Restore and Build
-        run: dotnet build .\dotnet_projet.sln
       # 4. Setup SSH key
       - name: Setup SSH key
         run: |
