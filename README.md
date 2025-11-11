@@ -1,5 +1,5 @@
 # E-Commerce Microservices
-
+Access via [website](http://68.221.16.40/)
 ## Architecture
 - **Frontend** (Port 5000) - Interface utilisateur
 - **ProductService** (Port 5002) - Gestion des produits avec SQL Server

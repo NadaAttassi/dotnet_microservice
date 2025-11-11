@@ -56,7 +56,7 @@ jobs:
             
             # Wait for services to be healthy
             echo "Waiting for services to start..."
-            sleep 240
+            sleep 30
             
             # Check container status
             sudo docker compose ps
