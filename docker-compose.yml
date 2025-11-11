@@ -1,0 +1,70 @@
+services:
+  # SQL Server pour les produits
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 10s bash -c '</dev/tcp/localhost/1433'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # Redis pour le panier
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Service des produits
+  productservice:
+    build: ./ProductService
+    ports:
+      - "5002:80"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ProductCatalog;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true;
+    restart: unless-stopped
+
+  # Service du panier
+  panierservice:
+    build: ./PanierService
+    ports:
+      - "5003:80"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__Redis=redis:6379
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    build: ./Frontend
+    ports:
+      - "5000:80"
+    depends_on:
+      productservice:
+        condition: service_started
+      panierservice:
+        condition: service_started
+    environment:
+      - Services__CatalogService=http://productservice
+      - Services__PanierService=http://panierservice
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
