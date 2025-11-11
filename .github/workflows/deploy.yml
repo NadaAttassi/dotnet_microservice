@@ -46,20 +46,20 @@ jobs:
             cd ~/app
             
             # Stop existing containers
-            docker compose down || true
+            sudo docker compose down || true
             
             # Remove old images to save space
-            docker image prune -af || true
+            sudo docker image prune -af || true
             
             # Build and start services
-            docker compose up -d --build
+            sudo docker compose up -d --build
             
             # Wait for services to be healthy
             echo "Waiting for services to start..."
             sleep 30
             
             # Check container status
-            docker compose ps
+            sudo docker compose ps
             
             # Check if frontend is accessible
             curl -f http://localhost:5000 || echo "Warning: Frontend not responding yet"
@@ -72,16 +72,16 @@ jobs:
             cd ~/app
             
             echo "=== Container Status ==="
-            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+            sudo docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
             
             echo -e "\n=== Service Health Check ==="
-            docker compose ps
+            sudo docker compose ps
             
             echo -e "\n=== Disk Usage ==="
             df -h /
             
             echo -e "\n=== Recent Logs ==="
-            docker compose logs --tail=50
+            sudo docker compose logs --tail=50
           EOF
 
       # 9. Cleanup SSH key
